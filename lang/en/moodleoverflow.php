@@ -29,12 +29,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 // Default strings.
-$string['modulename'] = 'moodleoverflow';
-$string['modulenameplural'] = 'moodleoverflows';
+$string['modulename'] = 'Moodleoverflow';
+$string['modulenameplural'] = 'Moodleoverflows';
 $string['modulename_help'] = 'The moodleoverflow module enables participants to use a StackOverflow-like forumstructure.';
 $string['moodleoverflowfieldset'] = 'Custom example fieldset';
-$string['moodleoverflowname'] = 'moodleoverflow name';
-$string['moodleoverflowname_help'] = 'This is the content of the help tooltip associated with the moodleoverflowname field. Markdown syntax is supported.';
+$string['moodleoverflowname'] = 'Moodleoverflow name';
 $string['moodleoverflow'] = 'Moodleoverflow';
 $string['pluginadministration'] = 'moodleoverflow administration';
 $string['pluginname'] = 'Moodleoverflow';
@@ -43,8 +42,9 @@ $string['pluginname'] = 'Moodleoverflow';
 $string['moodleoverflow:addinstance'] = 'Add a new moodleoverflow instance';
 $string['moodleoverflow:submit'] = 'Submit moodleoverflow';
 $string['moodleoverflow:allowforcesubscribe'] = 'Allow forced subscription';
+$string['moodleoverflow:createattachment'] = 'Create attachments';
 $string['moodleoverflow:managesubscriptions'] = 'Manage subscriptions';
-$string['moodleoverflow:ratesolved'] = 'Mark a post as helpful';
+$string['moodleoverflow:ratehelpful'] = 'Mark a post as helpful';
 $string['moodleoverflow:ratepost'] = 'Rate a post';
 $string['moodleoverflow:viewanyrating'] = 'View ratings';
 $string['moodleoverflow:deleteanypost'] = 'Delete posts';
@@ -86,6 +86,12 @@ $string['deletesureplural'] = 'Are you sure you want to delete this post and all
 // Strings for the settings.php.
 $string['configmanydiscussions'] = 'Maximum number of discussions shown in a moodleoverflow instance per page';
 $string['manydiscussions'] = 'Discussions per page';
+$string['maxattachmentsize'] = 'Maximum attachment size';
+$string['maxattachmentsize_help'] = 'This setting specifies the largest size of file that can be attached to a moodleoverflow post.';
+$string['configmaxbytes'] = 'Default maximum size for all moodleoverflow attachments on the site (subject to course limits and other local settings)';
+$string['maxattachments'] = 'Maximum number of attachments';
+$string['maxattachments_help'] = 'This setting specifies the maximum number of files that can be attached to a forum post.';
+$string['configmaxattachments'] = 'Default maximum number of attachments allowed per post.';
 $string['configoldpostdays'] = 'Number of days old any post is considered read.';
 $string['oldpostdays'] = 'Read after days';
 $string['trackingoff'] = 'Off';
@@ -106,8 +112,8 @@ $string['votescaledownvote'] = 'Reputation: Downvote';
 $string['configvotescaledownvote'] = 'The amount of reputation a downvote for your post gives.';
 $string['votescaleupvote'] = 'Reputation: Upvote';
 $string['configvotescaleupvote'] = 'The amount of reputation an upvote for your post gives.';
-$string['votescalecorrect'] = 'Reputation: Correct';
-$string['configvotescalecorrect'] = 'The amount of reputation a mark as correct on your post gives.';
+$string['votescalesolved'] = 'Reputation: Solved';
+$string['configvotescalesolved'] = 'The amount of reputation a mark as solved on your post gives.';
 $string['votescalehelpful'] = 'Reputation: Helpful';
 $string['configvotescalehelpful'] = 'The amount of reputation a mark as helpful on your post gives.';
 $string['reputationnotnegative'] = 'Reputation just positive?';
@@ -116,11 +122,6 @@ $string['allowcoursereputation'] = 'Sum reputation within a course.';
 $string['configallowcoursereputation'] = 'Allow to sum the reputation of all instances of the current course?';
 $string['maxmailingtime'] = 'Maximal mailing time';
 $string['configmaxmailingtime'] = 'Posts older than this number of hours will not be mailed to the users. This will help to avoid problems where the cron has not een running for a long time.';
-
-
-
-
-
 
 // Strings for the post.php.
 $string['invalidmoodleoverflowid'] = 'Moodleoverflow ID was incorrect';
@@ -165,11 +166,11 @@ $string['postnotexist'] = 'Requested post does not exist';
 $string['noratemoodleoverflow'] = 'Sorry, you are not allowed to vote in this moodleoverflow.';
 $string['configallowratingchange'] = 'Can a user change its ratings?';
 $string['allowratingchange'] = 'Allow rating changes';
-$string['configpreferteachersmark'] = 'The answer marked as correct by a teacher are prioritized over the answer marked as correct by the starter of the discussion.';
+$string['configpreferteachersmark'] = 'The answer marked as solved by a teacher are prioritized over the answer marked as helpful by the starter of the discussion.';
 $string['preferteachersmark'] = 'Prefer teachers marks?';
 $string['noratingchangeallowed'] = 'You are not allowed to change your ratings.';
 $string['invalidratingid'] = 'The submitted rating is neither an upvote nor a downvote.';
-$string['notstartuser'] = 'Only the user who started the discussion can mark an answer as the solution.';
+$string['notstartuser'] = 'Only the user who started the discussion can mark an answer as helpful.';
 $string['notteacher'] = 'Only users with the status teacher can do this.';
 $string['ratingtoold'] = 'Ratings can only be changed within 30 minutes after the first vote. ';
 
@@ -186,8 +187,8 @@ $string['addanewreply'] = 'Add a new answer';
 $string['ratingfailed'] = 'Rating failed. Try again.';
 $string['marksolved'] = 'Mark as Solved';
 $string['marknotsolved'] = 'Not Solved';
-$string['markcorrect'] = 'Mark as Helpful';
-$string['marknotcorrect'] = 'Not Helpful';
+$string['markhelpful'] = 'Mark as Helpful';
+$string['marknothelpful'] = 'Not Helpful';
 
 // Strings for the readtracking.php.
 $string['markreadfailed'] = 'A post of the discussion could not be marked as read.';
@@ -237,6 +238,8 @@ $string['trackmoodleoverflow'] = 'Track unread posts';
 $string['discussions'] = 'Discussions';
 $string['subscribed'] = 'Subscribed';
 $string['unreadposts'] = 'Unread posts';
+$string['unreadpostsnumber'] = '{$a} unread posts';
+$string['unreadpostsone'] = '1 unread post';
 $string['tracking'] = 'Track';
 $string['allsubscribe'] = 'Subscribe to all moodleoverflows';
 $string['allunsubscribe'] = 'Unsubscribe from all moodleoverflows';
@@ -247,6 +250,9 @@ $string['everyoneisnowsubscribed'] = 'Everyone is now subscribed to this moodleo
 $string['everyoneissubscribed'] = 'Everyone is subscribed to this moodleoverflow';
 $string['mailindexlink'] = 'Change your moodleoverflow preferences: {$a}';
 $string['gotoindex'] = 'Manage preferences';
+$string['areaattachment'] = 'Attachments';
+$string['areapost'] = 'Messages';
+
 
 // EVENTS.
 $string['eventdiscussioncreated'] = 'Discussion created';
@@ -286,20 +292,23 @@ $string['trackingoptional'] = 'Optional';
 $string['trackingtype'] = 'Read tracking';
 $string['trackingtype_help'] = 'Read tracking enables participants to easily check which posts they have not yet seen by highlighting any new posts.
 
-If set to optional, participants can choose whether to turn tracking on or off via a link in the administration block.
+If set to optional, tracking is turned on by default but participants can turn tracking off.
 
 If \'Allow forced read tracking\' is enabled in the site administration, then a further option is available - forced. This means that tracking is always on.';
 $string['ratingheading'] = 'Rating and reputation';
-$string['starterrating'] = 'Correct';
-$string['teacherrating'] = 'Helpful';
+$string['starterrating'] = 'Helpful';
+$string['teacherrating'] = 'Solved';
 $string['ratingpreference'] = 'Display first';
-$string['ratingpreference_help'] = 'Answers can be marked as correct and helpful. This option decides which of these will be pinned as the first answer of the discussion. There are 2 options:
+$string['ratingpreference_help'] = 'Answers can be marked as solved and helpful. This option decides which of these will be pinned as the first answer of the discussion. There are 2 options:
 
-* Correct - A teachers mark as helpful will be pinned at the top of the discussion
-* Helpful - A topic starters mark as correct will be pinned at the top of the discussion';
+* Heplful - A topic starters mark as helpful will be pinned at the top of the discussion
+* Solved - A teachers mark as solved will be pinned at the top of the discussion';
 $string['allownegativereputation'] = 'Allow negative reputation?';
-$string['allownegativereputation_help'] = 'If set to yes, the users reputation within a course or within a module can be negative or will stop to decrease at zero.';
+$string['allownegativereputation_help'] = 'If set to yes, the users reputation within a course or within a module can be negative. If set to no, the reputation will stop to decrease at zero.';
 $string['coursewidereputation'] = 'Cross module reputation?';
 $string['coursewidereputation_help'] = 'If set to yes, the users reputations of all moodleoverflow modules in this course will be summed.';
 $string['clicktounsubscribe'] = 'You are subscribed to this discussion. Click to unsubscribe.';
 $string['clicktosubscribe'] = 'You are not subscribed to this discussion. Click to subscribe.';
+$string['attachment'] = 'Attachment';
+$string['attachments'] = 'Attachments';
+$string['attachment_help'] = 'You can optionally attach one or more files to a forum post. If you attach an image, it will be displayed after the message.';

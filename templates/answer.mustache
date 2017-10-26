@@ -18,7 +18,11 @@
   @template mod_moodleoverflow/answer
 
   Moodleoverflow answer template.
-  The purpose of this template is to render an answer in the discussion..
+  The purpose of this template is to render an answer in the discussion.
+
+   Example context (json):
+   {
+   }
 }}
 
 {{! Print an anchor if the post is the first unread post of the discussion. }}
@@ -44,6 +48,23 @@
                     <div class="post-text">
                         {{{ postcontent }}}
                     </div>
+                    <div class="attachments">
+                        {{#attachments}}
+                            {{#image}}
+                                <img src="{{filepath}}" alt=""/>
+                                <br>
+                            {{/image}}
+                            {{^image}}
+                                <a href="{{filepath}}">
+                                    {{{icon}}}
+                                </a>
+                                <a href="{{filepath}}">
+                                    {{filename}}
+                                </a>
+                            {{/image}}
+                            <br>
+                        {{/attachments}}
+                    </div>
                     <table class="post-info">
                         <tbody>
                             <tr>
@@ -68,7 +89,7 @@
                                         {{! The displayed text. }}
                                         {{#statusstarter}}
                                             {{^statusteacher}}
-                                                {{#pix}} status/c_outline, moodleoverflow {{/pix}}
+                                                {{#pix}} status/b_outline, moodleoverflow {{/pix}}
                                                 The question owner accepted this as the best answer.
                                             {{/statusteacher}}
                                             {{#statusteacher}}
@@ -79,8 +100,8 @@
                                         {{/statusstarter}}
                                         {{^statusstarter}}
                                             {{#statusteacher}}
-                                                {{#pix}} status/b_outline, moodleoverflow {{/pix}}
-                                                This post is marked as most helpful by the teacher.
+                                                {{#pix}} status/c_outline, moodleoverflow {{/pix}}
+                                                This post is marked as solved by the teacher.
                                             {{/statusteacher}}
                                         {{/statusstarter}}
                                     </div>

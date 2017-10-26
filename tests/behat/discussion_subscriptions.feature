@@ -1,5 +1,5 @@
 @mod @mod_moodleoverflow
-Feature: A user can control their own subscription preferences for a discussion
+Feature: A user can control their own moodleoverflow subscription preferences for a discussion
   In order to receive notifications for things I am interested in
   As a user
   I need to choose my discussion subscriptions
@@ -65,7 +65,7 @@ Feature: A user can control their own subscription preferences for a discussion
 
   Scenario: An automatic subscription moodleoverflow can have discussions unsubscribed from
     Given I add a "Moodleoverflow" to section "1" and I fill the form with:
-      | moodleoverflow name | Test moodleoverflow name |
+      | Moodleoverflow name | Test moodleoverflow name |
       | Description         | Test moodleoverflow description |
       | Subscription mode   | Auto subscription |
     And I add a new discussion to "Test moodleoverflow name" moodleoverflow with:
@@ -106,36 +106,3 @@ Feature: A user can control their own subscription preferences for a discussion
     And I should see "Unsubscribe from this moodleoverflow"
     And "You are subscribed to this discussion. Click to unsubscribe." "link" should exist in the "Test post subject one" "table_row"
     And "You are subscribed to this discussion. Click to unsubscribe." "link" should exist in the "Test post subject two" "table_row"
-
- Scenario: A guest should not be able to subscribe to a discussion
-   Given I am on site homepage
-   And I add a "Moodleoverflow" to section "1" and I fill the form with:
-     | Moodleoverflow name | Test moodleoverflow name |
-     | Description         | Test moodleoverflow description |
-   And I add a new discussion to "Test moodleoverflow name" moodleoverflow with:
-     | Subject | Test post subject one |
-     | Message | Test post message one |
-   And I log out
-   When I log in as "guest"
-   And I follow "Test moodleoverflow name"
-   Then "You are not subscribed to this discussion. Click to subscribe." "link" should not exist in the "Test post subject one" "table_row"
-   And "You are subscribed to this discussion. Click to unsubscribe." "link" should not exist in the "Test post subject one" "table_row"
-   And I follow "Test post subject one"
-   And "You are not subscribed to this discussion. Click to subscribe." "link" should not exist
-   And "You are subscribed to this discussion. Click to unsubscribe." "link" should not exist
-
- Scenario: A user who is not logged in should not be able to subscribe to a discussion
-   Given I am on site homepage
-   And I add a "Moodleoverflow" to section "1" and I fill the form with:
-     | Moodleoverflow name | Test moodleoverflow name |
-     | Description         | Test moodleoverflow description |
-   And I add a new discussion to "Test moodleoverflow name" moodleoverflow with:
-     | Subject | Test post subject one |
-     | Message | Test post message one |
-   And I log out
-   When I follow "Test moodleoverflow name"
-   Then "You are not subscribed to this discussion. Click to subscribe." "link" should not exist in the "Test post subject one" "table_row"
-   And "You are subscribed to this discussion. Click to unsubscribe." "link" should not exist in the "Test post subject one" "table_row"
-   And I follow "Test post subject one"
-   And "You are not subscribed to this discussion. Click to subscribe." "link" should not exist
-   And "You are subscribed to this discussion. Click to unsubscribe." "link" should not exist

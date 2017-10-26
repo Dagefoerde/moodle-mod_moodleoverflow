@@ -114,12 +114,17 @@ class ratings {
         // Check for an older rating in this discussion.
         $oldrating = self::moodleoverflow_check_old_rating($postid, $userid);
 
-        // Mark a post as solution.
-        if ($rating == RATING_SOLVED OR $rating == RATING_HELPFUL) {
+        // Mark a post as solution or as helpful.
+        if ($rating == RATING_SOLVED || $rating == RATING_HELPFUL) {
 
             // Check if the current user is the startuser.
-            if ($userid != $discussion->userid) {
+            if ($rating == RATING_HELPFUL && $userid != $discussion->userid) {
                 print_error('notstartuser', 'moodleoverflow');
+            }
+
+            // Check if the current user is a teacher.
+            if ($rating == RATING_SOLVED && !has_capability('mod/moodleoverflow:marksolved', $modulecontext)) {
+                print_error('notteacher', 'moodleoverflow');
             }
 
             // Get other ratings in the discussion.
@@ -198,7 +203,6 @@ class ratings {
      * @return array
      */
     public static function moodleoverflow_sort_answers_by_ratings($posts) {
-
         // Create copies to manipulate.
         $parentcopy = $posts;
         $postscopy = $posts;
@@ -222,7 +226,7 @@ class ratings {
         $discussionid = $parent->discussion;
         $neworder[] = (int) $parent->id;
 
-        // Check if answers has been rated as correct.
+        // Check if answers has been marked.
         $statusstarter = self::moodleoverflow_discussion_is_solved($discussionid, false);
         $statusteacher = self::moodleoverflow_discussion_is_solved($discussionid, true);
 
@@ -243,7 +247,7 @@ class ratings {
         }
 
         // If the answers the teacher marks are preferred, and only
-        // the teacher marked an answer as correct, display it first.
+        // the teacher marked an answer as solved, display it first.
         if ($preferteacher AND $statusteacher) {
 
             // Add the post to the new order and delete it from the posts array.
@@ -255,7 +259,7 @@ class ratings {
         }
 
         // If the user who started the discussion has marked
-        // an answer as correct, display this answer first.
+        // an answer as helpful, display this answer first.
         if ($statusstarter) {
 
             // Add the post to the new order and delete it from the posts array.
@@ -263,7 +267,7 @@ class ratings {
             unset($postscopy[$statusstarter->postid]);
         }
 
-        // If a teacher has marked an answer as correct, display it next.
+        // If a teacher has marked an answer as solved, display it next.
         if ($statusteacher) {
 
             // Add the post to the new order and delete it from the posts array.
@@ -271,7 +275,7 @@ class ratings {
             unset($postscopy[$statusteacher->postid]);
         }
 
-        // All answers that are not marked as correct by someone should now be left.
+        // All answers that are not marked by someone should now be left.
 
         // Search for all comments.
         foreach ($postscopy as $postid => $post) {
@@ -360,11 +364,11 @@ class ratings {
 
         // Get the amount of votes.
         $sql = "SELECT id as postid,
-                       (SELECT COUNT(rating) FROM mdl_moodleoverflow_ratings WHERE postid=p.id AND rating = 1) AS downvotes,
-	                   (SELECT COUNT(rating) FROM mdl_moodleoverflow_ratings WHERE postid=p.id AND rating = 2) AS upvotes,
-                       (SELECT COUNT(rating) FROM mdl_moodleoverflow_ratings WHERE postid=p.id AND rating = 3) AS issolvedstarter,
-                       (SELECT COUNT(rating) FROM mdl_moodleoverflow_ratings WHERE postid=p.id AND rating = 4) AS issolvedteacher
-                  FROM mdl_moodleoverflow_posts p
+                       (SELECT COUNT(rating) FROM {moodleoverflow_ratings} WHERE postid=p.id AND rating = 1) AS downvotes,
+	                   (SELECT COUNT(rating) FROM {moodleoverflow_ratings} WHERE postid=p.id AND rating = 2) AS upvotes,
+                       (SELECT COUNT(rating) FROM {moodleoverflow_ratings} WHERE postid=p.id AND rating = 3) AS issolved,
+                       (SELECT COUNT(rating) FROM {moodleoverflow_ratings} WHERE postid=p.id AND rating = 4) AS ishelpful
+                  FROM {moodleoverflow_posts} p
                  WHERE p.discussion = $discussionid
               GROUP BY p.id";
         $votes = $DB->get_records_sql($sql);
@@ -398,25 +402,25 @@ class ratings {
         // Is the teachers solved-status requested?
         if ($teacher) {
 
-            // Check if a teacher marked a solution as correct.
-            if ($DB->record_exists('moodleoverflow_ratings', array('discussionid' => $discussionid, 'rating' => 4))) {
+            // Check if a teacher marked a solution as solved.
+            if ($DB->record_exists('moodleoverflow_ratings', array('discussionid' => $discussionid, 'rating' => 3))) {
 
                 // Return the rating record.
-                return $DB->get_record('moodleoverflow_ratings', array('discussionid' => $discussionid, 'rating' => 4));
+                return $DB->get_record('moodleoverflow_ratings', array('discussionid' => $discussionid, 'rating' => 3));
             }
 
-            // The teacher has not marked the discussion as correct.
+            // The teacher has not marked the discussion as solved.
             return false;
         }
 
-        // Check if the topic starter marked a solution as correct.
-        if ($DB->record_exists('moodleoverflow_ratings', array('discussionid' => $discussionid, 'rating' => 3))) {
+        // Check if the topic starter marked a solution as helpful.
+        if ($DB->record_exists('moodleoverflow_ratings', array('discussionid' => $discussionid, 'rating' => 4))) {
 
             // Return the rating record.
-            return $DB->get_record('moodleoverflow_ratings', array('discussionid' => $discussionid, 'rating' => 3));
+            return $DB->get_record('moodleoverflow_ratings', array('discussionid' => $discussionid, 'rating' => 4));
         }
 
-        // The topic starter has not marked a solution as correct.
+        // The topic starter has not marked a solution as helpful.
         return false;
     }
 
@@ -471,15 +475,15 @@ class ratings {
                 continue;
             }
 
-            // The post has been marked as correct by the question owner.
-            if ($record->rating == RATING_SOLVED) {
-                $reputation += $CFG->moodleoverflow_votescalecorrect;
+            // The post has been marked as helpful by the question owner.
+            if ($record->rating == RATING_HELPFUL) {
+                $reputation += $CFG->moodleoverflow_votescalehelpful;
                 continue;
             }
 
-            // The post has been marked as helpful by a teacher.
-            if ($record->rating == RATING_HELPFUL) {
-                $reputation += $CFG->moodleoverflow_votescalehelpful;
+            // The post has been marked as solved by a teacher.
+            if ($record->rating == RATING_SOLVED) {
+                $reputation += $CFG->moodleoverflow_votescalesolved;
                 continue;
             }
 
